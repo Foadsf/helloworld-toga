@@ -47,7 +47,6 @@ requires = []
 # Linux Configuration
 # =============================================================================
 [tool.briefcase.app.helloworld.linux]
-[tool.briefcase.app.helloworld.linux]
 requires = [
     # Pin Toga to <0.4.5 to stay on the stable GTK 3 branch
     "toga-gtk>=0.4.0,<0.4.5",
