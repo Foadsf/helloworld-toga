@@ -1,0 +1,844 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  workflows/
+    release.yml
+src/
+  helloworld/
+    __init__.py
+    __main__.py
+    app.py
+.gitignore
+LICENSE
+pyproject.toml
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/helloworld/__init__.py">
+from .app import main
+</file>
+
+<file path="src/helloworld/__main__.py">
+from helloworld.app import main
+
+if __name__ == "__main__":
+    main().main_loop()
+</file>
+
+<file path="src/helloworld/app.py">
+import toga
+from toga.style import Pack
+from toga.style.pack import COLUMN, CENTER
+
+class HelloWorld(toga.App):
+    def startup(self):
+        # ERROR FIX: 'padding' is now 'margin'
+        self.label = toga.Label(
+            "Hello, World!",
+            style=Pack(margin=20, text_align=CENTER)
+        )
+
+        button = toga.Button(
+            "Click me",
+            on_press=self.on_button_press,
+            # ERROR FIX: 'padding' is now 'margin'
+            style=Pack(margin=10)
+        )
+
+        # ERROR FIX: 'padding' is now 'margin'
+        # ERROR FIX: 'alignment' is now 'align_items'
+        box = toga.Box(
+            children=[self.label, button],
+            style=Pack(direction=COLUMN, align_items=CENTER, margin=20)
+        )
+
+        self.main_window = toga.MainWindow(title=self.formal_name)
+        self.main_window.content = box
+        self.main_window.show()
+
+    def on_button_press(self, widget):
+        self.label.text = "Button was clicked!"
+
+def main():
+    return HelloWorld("Hello World", "org.example.helloworld")
+
+if __name__ == "__main__":
+    main().main_loop()
+</file>
+
+<file path="LICENSE">
+---
+title: MIT License
+spdx-id: MIT
+featured: true
+hidden: false
+
+description: A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
+
+how: Create a text file (typically named LICENSE or LICENSE.txt) in the root of your source code and copy the text of the license into the file. Replace [year] with the current year and [fullname] with the name (or names) of the copyright holders.
+
+using:
+  Babel: https://github.com/babel/babel/blob/master/LICENSE
+  .NET: https://github.com/dotnet/runtime/blob/main/LICENSE.TXT
+  Rails: https://github.com/rails/rails/blob/master/MIT-LICENSE
+
+permissions:
+  - commercial-use
+  - modifications
+  - distribution
+  - private-use
+
+conditions:
+  - include-copyright
+
+limitations:
+  - liability
+  - warranty
+
+---
+
+MIT License
+
+Copyright (c) [year] [fullname]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</file>
+
+<file path=".gitignore">
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+*.dist-info/
+
+# BeeWare / Briefcase specific
+.briefcase/
+logs/
+iOS/
+android/
+linux/
+windows/
+macOS/
+</file>
+
+<file path=".github/workflows/release.yml">
+# =============================================================================
+# Cross-Platform Release Workflow for BeeWare/Toga Application
+# =============================================================================
+# Triggers: GitHub Release creation or version tag push (v*)
+# Builds: Windows MSI, Linux AppImage, macOS DMG, Android APK, iOS Xcode
+# =============================================================================
+
+name: Release
+
+on:
+  release:
+    types: [created]
+  push:
+    tags:
+      - 'v*'
+
+env:
+  PYTHON_VERSION: '3.12'
+  BRIEFCASE_VERSION: '0.3.21'
+
+jobs:
+  # ===========================================================================
+  # Linux AppImage Build
+  # ===========================================================================
+  build-linux:
+    name: Build Linux AppImage
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-dev \
+            libgirepository1.0-dev \
+            libcairo2-dev \
+            gir1.2-gtk-3.0 \
+            pkg-config \
+            libfuse2 \
+            fuse
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Briefcase
+        run: |
+          python -m pip install --upgrade pip
+          pip install briefcase==${{ env.BRIEFCASE_VERSION }}
+
+      - name: Build AppImage
+        run: |
+          briefcase create linux appimage
+          briefcase build linux appimage
+          briefcase package linux appimage
+
+      - name: Find and rename artifact
+        id: artifact
+        run: |
+          APPIMAGE=$(find dist -name "*.AppImage" -type f | head -1)
+          if [ -n "$APPIMAGE" ]; then
+            NEWNAME="HelloWorld-linux-x86_64.AppImage"
+            cp "$APPIMAGE" "dist/$NEWNAME"
+            echo "path=dist/$NEWNAME" >> $GITHUB_OUTPUT
+            echo "name=$NEWNAME" >> $GITHUB_OUTPUT
+          else
+            echo "No AppImage found!"
+            exit 1
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-appimage
+          path: ${{ steps.artifact.outputs.path }}
+          retention-days: 5
+
+  # ===========================================================================
+  # Windows MSI Build
+  # ===========================================================================
+  build-windows:
+    name: Build Windows MSI
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Briefcase
+        run: |
+          python -m pip install --upgrade pip
+          pip install briefcase==${{ env.BRIEFCASE_VERSION }}
+
+      - name: Build MSI
+        run: |
+          briefcase create windows app
+          briefcase build windows app
+          briefcase package windows app
+        # NOTE: For signed MSI, add: --adhoc-sign or configure certificate
+        # See "Secrets" section at bottom of this file
+
+      - name: Find and rename artifact
+        id: artifact
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem -Path dist -Filter "*.msi" -Recurse | Select-Object -First 1
+          if ($msi) {
+            $newName = "HelloWorld-windows-x64.msi"
+            Copy-Item $msi.FullName -Destination "dist\$newName"
+            "path=dist\$newName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            "name=$newName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          } else {
+            Write-Error "No MSI found!"
+            exit 1
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi
+          path: ${{ steps.artifact.outputs.path }}
+          retention-days: 5
+
+  # ===========================================================================
+  # macOS DMG Build (Ad-hoc signed - will NOT pass Gatekeeper)
+  # ===========================================================================
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest # Apple Silicon runner (macOS 14+)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install briefcase==${{ env.BRIEFCASE_VERSION }}
+      
+      # FIX: Check for certificate existence and output boolean
+      - name: Check for signing certificate
+        id: check_cert
+        run: |
+          if [ -n "${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE }}" ]; then
+            echo "has_cert=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_cert=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # FIX: Use the step output for the conditional check
+      - name: Install Apple Developer ID certificate (Optional)
+        if: steps.check_cert.outputs.has_cert == 'true'
+        uses: apple-actions/import-certificate@v1
+        with:
+          certificate-data: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE }}
+          certificate-passphrase: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+      
+      - name: Build macOS App
+        env:
+          HAS_CERT: ${{ steps.check_cert.outputs.has_cert }}
+          DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
+        run: |
+          briefcase create macOS app
+          briefcase build macOS app
+          
+          # If you have a Developer ID certificate for distribution:
+          if [ "$HAS_CERT" == "true" ] && [ -n "$DEVELOPER_ID" ]; then
+            echo "Signing with Identity: $DEVELOPER_ID"
+            briefcase package macOS app --identity "$DEVELOPER_ID"
+          else
+            # Ad-hoc signing (works only on build machine or with Gatekeeper disabled)
+            echo "Ad-hoc signing..."
+            briefcase package macOS app --adhoc-sign
+          fi
+      - id: artifact
+        run: |
+          DMG=$(find dist -name "*.dmg" | head -1)
+          [ -z "$DMG" ] && echo "No DMG found" && exit 1
+          NEWNAME="HelloWorld-macOS-universal.dmg"
+          cp "$DMG" "dist/$NEWNAME"
+          echo "path=dist/$NEWNAME" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: ${{ steps.artifact.outputs.path }}
+          retention-days: 5
+
+  # ===========================================================================
+  # Android APK Build (Debug - no signing required)
+  # ===========================================================================
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Briefcase
+        run: |
+          python -m pip install --upgrade pip
+          pip install briefcase==${{ env.BRIEFCASE_VERSION }}
+
+      - name: Build Debug APK
+        run: |
+          briefcase create android
+          briefcase build android
+          # Debug build - no signing secrets needed
+          briefcase package android
+
+      - name: Find and rename artifact
+        id: artifact
+        run: |
+          APK=$(find . -path "*/build/outputs/apk/*/*.apk" -o -name "*.apk" -path "*/dist/*" 2>/dev/null | head -1)
+          if [ -z "$APK" ]; then
+            APK=$(find . -name "*.apk" -type f | head -1)
+          fi
+          if [ -n "$APK" ]; then
+            NEWNAME="HelloWorld-android-debug.apk"
+            mkdir -p dist
+            cp "$APK" "dist/$NEWNAME"
+            echo "path=dist/$NEWNAME" >> $GITHUB_OUTPUT
+            echo "name=$NEWNAME" >> $GITHUB_OUTPUT
+          else
+            echo "No APK found!"
+            find . -name "*.apk" -type f 2>/dev/null || true
+            exit 1
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: ${{ steps.artifact.outputs.path }}
+          retention-days: 5
+
+  # ===========================================================================
+  # iOS Build (Xcode project only - requires Apple Developer for IPA)
+  # ===========================================================================
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install briefcase==${{ env.BRIEFCASE_VERSION }}
+      
+      # iOS requires Xcode command line tools (pre-installed on macos-latest)
+      - run: xcode-select -p
+      
+      - name: Build iOS App
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          briefcase create iOS
+          briefcase build iOS
+          
+          # Without Apple Developer Program: Create .xcarchive only
+          # With Developer Program: Uncomment packaging section below
+          if [ -z "$TEAM_ID" ]; then
+            echo "Building only (no signing). Create .ipa manually in Xcode or set up secrets."
+            # Archive the build directory for manual signing
+            mkdir -p dist
+            tar -czf dist/HelloWorld-iOS-build.tar.gz build/helloworld/ios/xcode/
+          else
+            # Production build with signing (requires provisioning profile)
+            briefcase package iOS --team-id "$TEAM_ID"
+          fi
+      - id: artifact
+        run: |
+          if [ -f "dist/HelloWorld-iOS-build.tar.gz" ]; then
+            echo "path=dist/HelloWorld-iOS-build.tar.gz" >> $GITHUB_OUTPUT
+          else
+            IPA=$(find dist -name "*.ipa" | head -1)
+            echo "path=$IPA" >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: ${{ steps.artifact.outputs.path }}
+          retention-days: 5
+
+  # ===========================================================================
+  # Upload all artifacts to GitHub Release
+  # ===========================================================================
+  release:
+    name: Upload Release Assets
+    needs: [build-linux, build-windows, build-android, build-macos, build-ios]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display downloaded files
+        run: find artifacts -type f -ls
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/linux-appimage/*.AppImage
+            artifacts/windows-msi/*.msi
+            artifacts/macos-dmg/*.dmg
+            artifacts/android-apk/*.apk
+            artifacts/ios-build/*.tar.gz
+            artifacts/ios-build/*.ipa
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# =============================================================================
+# SECRETS REFERENCE FOR PRODUCTION SIGNING
+# =============================================================================
+#
+# To enable properly signed builds, add these secrets to your repository:
+# (Settings > Secrets and variables > Actions > New repository secret)
+#
+# ┌─────────────────────────────────────────────────────────────────────────────┐
+# │ APPLE (macOS + iOS)                                                         │
+# ├─────────────────────────────────────────────────────────────────────────────┤
+# │ APPLE_DEVELOPER_ID_CERTIFICATE      - Base64-encoded .p12 certificate       │
+# │ APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD - Password for the .p12             │
+# │ APPLE_DEVELOPER_ID                  - Your Developer ID string              │
+# │ KEYCHAIN_PASSWORD                   - Random password for CI keychain       │
+# │ APPLE_TEAM_ID                       - Your Apple Developer Team ID          │
+# │                                                                             │
+# │ To export certificate:                                                      │
+# │   1. Open Keychain Access on macOS                                          │
+# │   2. Export "Developer ID Application" cert as .p12                         │
+# │   3. base64 -i certificate.p12 | pbcopy                                     │
+# │   4. Paste into APPLE_DEVELOPER_ID_CERTIFICATE secret                       │
+# └─────────────────────────────────────────────────────────────────────────────┘
+</file>
+
+<file path="README.md">
+# Toga Hello World
+
+A minimal, cross-platform GUI application written in Python using [BeeWare/Toga](https://beeware.org/).
+
+[![Release](https://github.com/Foadsf/helloworld-toga/actions/workflows/release.yml/badge.svg)](https://github.com/Foadsf/helloworld-toga/actions/workflows/release.yml)
+
+## Project Structure
+
+
+```
+
+toga-hello/
+├── .github/
+│   └── workflows/
+│       └── release.yml      # CI/CD for cross-platform builds
+├── icons/
+│   └── README.md            # Icon requirements
+├── src/
+│   └── helloworld/
+│       ├── **init**.py      # Package marker
+│       ├── **main**.py      # Execution entry point
+│       └── app.py           # Main application logic
+├── tests/
+│   └── **init**.py
+├── https://www.google.com/search?q=LICENSE
+├── pyproject.toml           # Briefcase configuration
+└── README.md
+
+```
+
+## Prerequisites (Local Development)
+
+### Linux (Ubuntu 24.04+ / Linux Mint 22)
+
+This project relies on GTK bindings. **Note:** Ubuntu 24.04 and Linux Mint 22 have moved to `girepository-2.0`. You must install the correct development headers for local testing:
+
+```bash
+sudo apt update
+sudo apt install -y git python3-dev python3-venv \
+    libgirepository-2.0-dev \
+    libcairo2-dev gir1.2-gtk-3.0 pkg-config
+
+```
+
+> **Legacy Systems:** If you are on Ubuntu 22.04 or older, use `libgirepository1.0-dev` instead.
+
+### macOS / Windows
+
+See [BeeWare documentation](https://docs.beeware.org/) for platform-specific requirements.
+
+## Installation
+
+1. **Create and activate a virtual environment:**
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+```
+
+
+2. **Install Briefcase (The packaging tool):**
+```bash
+pip install briefcase
+
+```
+
+
+3. **Install the project in editable mode:**
+This ensures `briefcase` can find your code logic in `src/`.
+```bash
+pip install -e .
+
+```
+
+
+
+## Usage
+
+### Run with Briefcase (Recommended)
+
+This emulates the full packaging environment.
+
+```bash
+briefcase dev
+
+```
+
+### Run directly (Quick Testing)
+
+Since this is a standard Python package, you can run it as a module:
+
+```bash
+python -m helloworld
+
+```
+
+## Packaging
+
+To bundle this application for distribution, use `briefcase`.
+
+### Local Builds
+
+```bash
+# Linux AppImage (Portable single-file executable)
+# Note: Uses manylinux_2_34 (AlmaLinux 9) Docker image
+briefcase create linux appimage
+briefcase build linux appimage
+briefcase package linux appimage
+
+# Windows (Must run on Windows)
+briefcase create windows app
+briefcase build windows app
+briefcase package windows app
+
+# macOS (Must run on macOS)
+briefcase create macOS app
+briefcase build macOS app
+briefcase package macOS app --adhoc-sign
+
+# Android (Requires Android SDK - Briefcase handles this)
+briefcase create android
+briefcase build android
+briefcase package android
+
+```
+
+### Automated Releases (CI/CD)
+
+This repository includes a GitHub Action (`.github/workflows/release.yml`) that automatically builds binaries whenever you push a version tag.
+
+1. **Commit your changes:**
+```bash
+git add .
+git commit -m "Your commit message"
+git push origin main
+
+```
+
+
+2. **Trigger a release:**
+```bash
+git tag -f v0.1.0
+git push -f origin v0.1.0
+
+```
+
+
+
+The workflow builds:
+
+* **Linux:** `.AppImage` (portable)
+* **Windows:** `.msi` installer
+* **Android:** Debug `.apk`
+* **macOS/iOS:** (Configured in workflow)
+
+## ⚠️ Important: Linux AppImage Configuration
+
+Creating a portable AppImage for GTK apps requires a specific balance between the Build OS version and the Python Library versions.
+
+The working configuration in `pyproject.toml` uses **manylinux_2_34** (AlmaLinux 9) to provide modern GLib (2.68+), while strictly pinning `pygobject` to avoid the bleeding-edge `girepository-2.0` requirement.
+
+**Do not change these versions unless you verify compatibility:**
+
+```toml
+[tool.briefcase.app.helloworld.linux]
+requires = [
+    "toga-gtk>=0.4.0,<0.4.5",       # Stable Toga series
+    "pygobject>=3.46.0,<3.48.0",    # Pinned to support GLib 2.68 but avoid girepository-2.0
+]
+
+[tool.briefcase.app.helloworld.linux.appimage]
+manylinux = "manylinux_2_34"        # AlmaLinux 9 build environment
+system_requires = [
+    "fuse-libs",                    # Red Hat package name (not libfuse2)
+    "cairo-devel",
+    "cairo-gobject-devel",
+    "gobject-introspection-devel",
+]
+
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+</file>
+
+<file path="pyproject.toml">
+[build-system]
+requires = ["briefcase"]
+build-backend = "briefcase.integrations.setuptools"
+
+[project]
+name = "helloworld"
+version = "0.1.0"
+description = "A minimal cross-platform Toga GUI application"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "you@example.com"}
+]
+keywords = ["gui", "toga", "beeware", "cross-platform"]
+# Global dependencies must be empty to avoid android conflicts
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/yourusername/helloworld"
+
+# =============================================================================
+# Briefcase Configuration
+# =============================================================================
+[tool.briefcase]
+project_name = "Hello World"
+bundle = "org.example"
+version = "0.1.0"
+url = "https://github.com/yourusername/helloworld"
+license.file = "LICENSE"
+author = "Your Name"
+author_email = "you@example.com"
+
+[tool.briefcase.app.helloworld]
+formal_name = "Hello World"
+description = "A minimal cross-platform Toga GUI application"
+long_description = """A demonstration app built with BeeWare/Toga."""
+# icon = "icons/helloworld"
+sources = ["src/helloworld"]
+test_sources = ["tests"]
+# Common requirements empty to avoid platform conflicts
+requires = []
+
+# =============================================================================
+# Linux Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.linux]
+requires = [
+    # Pin Toga to the stable 0.4.x series
+    "toga-gtk>=0.4.0,<0.4.5",
+    
+    # CRITICAL FIX: 
+    # 1. Must be >= 3.46.0 to satisfy Toga 0.4.4
+    # 2. Must be < 3.48.0 to avoid 'girepository-2.0' error
+    "pygobject>=3.46.0,<3.48.0",
+]
+system_requires = [
+    "libgirepository1.0-dev",
+    "libcairo2-dev",
+    "gir1.2-gtk-3.0",
+]
+
+[tool.briefcase.app.helloworld.linux.appimage]
+# Use AlmaLinux 9 (GLib 2.68) which satisfies the requirement for GLib >= 2.64
+manylinux = "manylinux_2_34"
+
+# Red Hat package names for the Docker container
+system_requires = [
+    "fuse-libs",
+    "cairo-devel",
+    "cairo-gobject-devel",
+    "gobject-introspection-devel",
+]
+
+# =============================================================================
+# Windows Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.windows]
+requires = ["toga-winforms>=0.4.0"]
+
+# =============================================================================
+# macOS Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.macOS]
+requires = ["toga-cocoa>=0.4.0"]
+universal_build = true
+
+# =============================================================================
+# iOS Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.iOS]
+requires = ["toga-iOS>=0.4.0"]
+
+# =============================================================================
+# Android Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.android]
+requires = ["toga-android>=0.4.0"]
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+build_gradle_dependencies = ["com.google.android.material:material:1.11.0"]
+splash_background_color = "#FFFFFF"
+</file>
+
+</files>
