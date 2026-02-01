@@ -94,11 +94,9 @@ python -m helloworld
 
 ```
 
-## Packaging
+## Packaging (Local Builds)
 
-To bundle this application for distribution, use `briefcase`.
-
-### Local Builds
+To bundle this application for distribution locally, use `briefcase`.
 
 ```bash
 # Linux AppImage (Portable single-file executable)
@@ -115,16 +113,24 @@ briefcase package windows app
 # macOS (Must run on macOS)
 briefcase create macOS app
 briefcase build macOS app
+# For ad-hoc signing (runs locally only):
 briefcase package macOS app --adhoc-sign
+# For distribution (requires Developer ID):
+# briefcase package macOS app --identity "Developer ID Application: ..."
 
 # Android (Requires Android SDK - Briefcase handles this)
 briefcase create android
 briefcase build android
 briefcase package android
 
+# iOS (Requires macOS + Xcode)
+briefcase create iOS
+briefcase build iOS
+briefcase package iOS
+
 ```
 
-### Automated Releases (CI/CD)
+## Automated Releases (CI/CD)
 
 This repository includes a GitHub Action (`.github/workflows/release.yml`) that automatically builds binaries whenever you push a version tag.
 
@@ -146,12 +152,13 @@ git push -f origin v0.1.0
 
 
 
-The workflow builds:
+The workflow builds and uploads the following artifacts:
 
 * **Linux:** `.AppImage` (portable)
 * **Windows:** `.msi` installer
+* **macOS:** `.dmg` disk image (Signed if secrets are present, otherwise ad-hoc)
 * **Android:** Debug `.apk`
-* **macOS/iOS:** (Configured in workflow)
+* **iOS:** `.ipa` (if signed) or Xcode archive `.tar.gz` (unsigned)
 
 ## ⚠️ Important: Linux AppImage Configuration
 
@@ -178,6 +185,20 @@ system_requires = [
 ]
 
 ```
+
+## Code Signing & Secrets
+
+To enable production-grade signing in GitHub Actions, configure the following secrets in **Settings > Secrets and variables > Actions**:
+
+| Secret Name | Description |
+| --- | --- |
+| `APPLE_DEVELOPER_ID_CERTIFICATE` | Base64-encoded `.p12` certificate file. |
+| `APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD` | Password for the `.p12` file. |
+| `APPLE_DEVELOPER_ID` | Your Apple Developer ID (e.g., `Developer ID Application: Name (ID)`). |
+| `KEYCHAIN_PASSWORD` | A random string used to secure the temporary CI keychain. |
+| `APPLE_TEAM_ID` | Your 10-character Apple Team ID (required for iOS). |
+
+*Without these secrets, macOS builds will be ad-hoc signed (requiring manual Gatekeeper override) and iOS builds will produce an unsigned Xcode archive.*
 
 ## License
 
