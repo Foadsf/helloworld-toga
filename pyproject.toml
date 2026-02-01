@@ -1,20 +1,101 @@
 [build-system]
-requires = ["briefcase"]
-build-backend = "briefcase.integrations.setuptools"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "helloworld"
 version = "0.1.0"
-description = "A minimal Toga application"
-requires-python = ">=3.8"
-dependencies = ["toga>=0.4.0"]
+description = "A minimal cross-platform Toga GUI application"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "you@example.com"}
+]
+keywords = ["gui", "toga", "beeware", "cross-platform"]
+dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/yourusername/helloworld"
+
+# =============================================================================
+# Briefcase Configuration
+# =============================================================================
 [tool.briefcase]
 project_name = "Hello World"
 bundle = "org.example"
+version = "0.1.0"
+url = "https://github.com/yourusername/helloworld"
+license.file = "LICENSE"
+author = "Your Name"
+author_email = "you@example.com"
 
 [tool.briefcase.app.helloworld]
 formal_name = "Hello World"
-description = "A minimal Toga application"
-sources = ["."]
-requires = ["toga>=0.4.0"]
+description = "A minimal cross-platform Toga GUI application"
+long_description = """A demonstration app built with BeeWare/Toga."""
+# icon = "icons/helloworld"  <-- COMMENTED OUT UNTIL YOU HAVE ICONS
+sources = [
+    "src/helloworld",
+]
+test_sources = [
+    "tests",
+]
+requires = []
+
+# =============================================================================
+# Linux Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.linux]
+requires = [
+    "toga-gtk>=0.4.0",
+]
+system_requires = [
+    "libgirepository1.0-dev",
+    "libcairo2-dev",
+    "gir1.2-gtk-3.0",
+]
+
+[tool.briefcase.app.helloworld.linux.appimage]
+manylinux = "manylinux_2_28"
+system_requires = [
+    "fuse-libs",
+]
+
+# =============================================================================
+# Windows Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.windows]
+requires = [
+    "toga-winforms>=0.4.0",
+]
+
+# =============================================================================
+# macOS Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.macOS]
+requires = [
+    "toga-cocoa>=0.4.0",
+]
+universal_build = true
+
+# =============================================================================
+# iOS Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.iOS]
+requires = [
+    "toga-iOS>=0.4.0",
+]
+
+# =============================================================================
+# Android Configuration
+# =============================================================================
+[tool.briefcase.app.helloworld.android]
+requires = [
+    "toga-android>=0.4.0",
+]
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.11.0",
+]
+splash_background_color = "#FFFFFF"

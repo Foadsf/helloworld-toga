@@ -12,9 +12,11 @@ env/
 dist/
 build/
 *.egg-info/
+*.dist-info/
 
 # BeeWare / Briefcase specific
 .briefcase/
+logs/
 iOS/
 android/
 linux/
