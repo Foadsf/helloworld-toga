@@ -47,13 +47,15 @@ requires = []
 # Linux Configuration
 # =============================================================================
 [tool.briefcase.app.helloworld.linux]
+[tool.briefcase.app.helloworld.linux]
 requires = [
     # Pin Toga to <0.4.5 to stay on the stable GTK 3 branch
     "toga-gtk>=0.4.0,<0.4.5",
     
-    # CRITICAL FIX: Pin PyGObject to <3.48.0
-    # Versions 3.48+ require girepository-2.0 (unavailable in AppImage build env)
-    "pygobject>=3.46.0,<3.48.0",
+    # CRITICAL FIX: Pin PyGObject to 3.44.x
+    # 3.48+ requires girepository-2.0 (unavailable)
+    # 3.46+ requires GLib 2.64+ (unavailable in manylinux_2_28)
+    "pygobject>=3.44.0,<3.46.0",
 ]
 system_requires = [
     "libgirepository1.0-dev",
