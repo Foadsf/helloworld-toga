@@ -7,7 +7,7 @@ name = "helloworld"
 version = "0.1.0"
 description = "A minimal cross-platform Toga GUI application"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
     {name = "Your Name", email = "you@example.com"}
@@ -42,13 +42,17 @@ test_sources = ["tests"]
 requires = []
 
 # =============================================================================
-# Linux Configuration (The Critical Fix)
+# Linux Configuration
 # =============================================================================
 [tool.briefcase.app.helloworld.linux]
 requires = [
-    # Pin to strict known-good versions for AppImage compatibility
-    "toga-gtk==0.4.4",
-    "pygobject==3.42.2",
+    # Pin Toga to the stable 0.4.x series
+    "toga-gtk>=0.4.0,<0.4.5",
+    
+    # CRITICAL FIX: 
+    # 1. Must be >= 3.46.0 to satisfy Toga 0.4.4
+    # 2. Must be < 3.48.0 to avoid 'girepository-2.0' error
+    "pygobject>=3.46.0,<3.48.0",
 ]
 system_requires = [
     "libgirepository1.0-dev",
@@ -57,14 +61,15 @@ system_requires = [
 ]
 
 [tool.briefcase.app.helloworld.linux.appimage]
-# Use the older stable docker image
-manylinux = "manylinux_2_28"
+# Use AlmaLinux 9 (GLib 2.68) which satisfies the requirement for GLib >= 2.64
+manylinux = "manylinux_2_34"
+
 # Red Hat package names for the Docker container
 system_requires = [
     "fuse-libs",
     "cairo-devel",
-    "gobject-introspection-devel",
     "cairo-gobject-devel",
+    "gobject-introspection-devel",
 ]
 
 # =============================================================================
