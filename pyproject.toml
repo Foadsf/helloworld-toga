@@ -60,6 +60,8 @@ system_requires = [
 manylinux = "manylinux_2_28"
 system_requires = [
     "fuse-libs",
+    "cairo-gobject-devel",
+    "gobject-introspection-devel",
 ]
 
 # =============================================================================
