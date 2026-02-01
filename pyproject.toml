@@ -1,18 +1,19 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["briefcase"]
+build-backend = "briefcase.integrations.setuptools"
 
 [project]
 name = "helloworld"
 version = "0.1.0"
 description = "A minimal cross-platform Toga GUI application"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
     {name = "Your Name", email = "you@example.com"}
 ]
 keywords = ["gui", "toga", "beeware", "cross-platform"]
+# Global dependencies must be empty to avoid android conflicts
 dependencies = []
 
 [project.urls]
@@ -34,27 +35,20 @@ author_email = "you@example.com"
 formal_name = "Hello World"
 description = "A minimal cross-platform Toga GUI application"
 long_description = """A demonstration app built with BeeWare/Toga."""
-# icon = "icons/helloworld"  <-- COMMENTED OUT UNTIL YOU HAVE ICONS
-sources = [
-    "src/helloworld",
-]
-test_sources = [
-    "tests",
-]
+# icon = "icons/helloworld"
+sources = ["src/helloworld"]
+test_sources = ["tests"]
+# Common requirements empty to avoid platform conflicts
 requires = []
 
 # =============================================================================
-# Linux Configuration
+# Linux Configuration (The Critical Fix)
 # =============================================================================
 [tool.briefcase.app.helloworld.linux]
 requires = [
-    # Pin Toga to <0.4.5 to stay on the stable GTK 3 branch
-    "toga-gtk>=0.4.0,<0.4.5",
-    
-    # CRITICAL FIX: Pin PyGObject to 3.44.x
-    # 3.48+ requires girepository-2.0 (unavailable)
-    # 3.46+ requires GLib 2.64+ (unavailable in manylinux_2_28)
-    "pygobject>=3.44.0,<3.46.0",
+    # Pin to strict known-good versions for AppImage compatibility
+    "toga-gtk==0.4.4",
+    "pygobject==3.42.2",
 ]
 system_requires = [
     "libgirepository1.0-dev",
@@ -63,48 +57,40 @@ system_requires = [
 ]
 
 [tool.briefcase.app.helloworld.linux.appimage]
+# Use the older stable docker image
 manylinux = "manylinux_2_28"
+# Red Hat package names for the Docker container
 system_requires = [
     "fuse-libs",
     "cairo-devel",
-    "cairo-gobject-devel",
     "gobject-introspection-devel",
+    "cairo-gobject-devel",
 ]
 
 # =============================================================================
 # Windows Configuration
 # =============================================================================
 [tool.briefcase.app.helloworld.windows]
-requires = [
-    "toga-winforms>=0.4.0",
-]
+requires = ["toga-winforms>=0.4.0"]
 
 # =============================================================================
 # macOS Configuration
 # =============================================================================
 [tool.briefcase.app.helloworld.macOS]
-requires = [
-    "toga-cocoa>=0.4.0",
-]
+requires = ["toga-cocoa>=0.4.0"]
 universal_build = true
 
 # =============================================================================
 # iOS Configuration
 # =============================================================================
 [tool.briefcase.app.helloworld.iOS]
-requires = [
-    "toga-iOS>=0.4.0",
-]
+requires = ["toga-iOS>=0.4.0"]
 
 # =============================================================================
 # Android Configuration
 # =============================================================================
 [tool.briefcase.app.helloworld.android]
-requires = [
-    "toga-android>=0.4.0",
-]
+requires = ["toga-android>=0.4.0"]
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
-build_gradle_dependencies = [
-    "com.google.android.material:material:1.11.0",
-]
+build_gradle_dependencies = ["com.google.android.material:material:1.11.0"]
 splash_background_color = "#FFFFFF"
