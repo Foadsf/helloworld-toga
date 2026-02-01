@@ -57,9 +57,10 @@ system_requires = [
 ]
 
 [tool.briefcase.app.helloworld.linux.appimage]
-manylinux = "manylinux_2_34"
+manylinux = "manylinux_2_28"
 system_requires = [
     "fuse-libs",
+    "cairo-devel",
     "cairo-gobject-devel",
     "gobject-introspection-devel",
 ]
