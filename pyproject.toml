@@ -1,0 +1,20 @@
+[build-system]
+requires = ["briefcase"]
+build-backend = "briefcase.integrations.setuptools"
+
+[project]
+name = "helloworld"
+version = "0.1.0"
+description = "A minimal Toga application"
+requires-python = ">=3.8"
+dependencies = ["toga>=0.4.0"]
+
+[tool.briefcase]
+project_name = "Hello World"
+bundle = "org.example"
+
+[tool.briefcase.app.helloworld]
+formal_name = "Hello World"
+description = "A minimal Toga application"
+sources = ["."]
+requires = ["toga>=0.4.0"]

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+
+# BeeWare / Briefcase specific
+.briefcase/
+iOS/
+android/
+linux/
+windows/
+macOS/
